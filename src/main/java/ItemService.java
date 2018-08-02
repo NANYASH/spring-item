@@ -3,19 +3,19 @@ public class ItemService {
 
     ItemDAO itemDAO = new ItemDAO();
 
-    public Item save(Item item) {
+    public Item save(Item item) throws InternalServerError {
         return itemDAO.save(item);
     }
 
-    public Item update(Item item){
+    public Item update(Item item) throws InternalServerError {
         return itemDAO.update(item);
     }
 
-    public void delete(long id){
+    public void delete(long id) throws InternalServerError {
         itemDAO.delete(id);
     }
 
-    public Item findById(long id){
+    public Item findById(long id) throws InternalServerError {
        return itemDAO.findById(Item.class,id);
     }
 }

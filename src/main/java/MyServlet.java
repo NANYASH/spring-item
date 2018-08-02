@@ -15,22 +15,43 @@ public class MyServlet extends HttpServlet {
     private ObjectMapper mapper = new ObjectMapper();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.getWriter().println(controller.findById(Long.parseLong(req.getParameter("param"))).toString());
+        try {
+            resp.getWriter().println(controller.findById(Long.parseLong(req.getParameter("param"))).toString());
+        } catch (InternalServerError internalServerError) {
+            resp.getWriter().println("Internal Server Error");
+            internalServerError.printStackTrace();
+
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-       resp.getWriter().println("Save is done. "+controller.save(mapToItem(req)));
+        try {
+            resp.getWriter().println("Save is done. "+controller.save(mapToItem(req)));
+        } catch (InternalServerError internalServerError) {
+            resp.getWriter().println("Internal Server Error");
+            internalServerError.printStackTrace();
+        }
 
     }
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.getWriter().println("Update is done. "+controller.update(mapToItem(req)));
+        try {
+            resp.getWriter().println("Update is done. "+controller.update(mapToItem(req)));
+        } catch (InternalServerError internalServerError) {
+            resp.getWriter().println("Internal Server Error");
+            internalServerError.printStackTrace();
+        }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        controller.delete(Long.parseLong(req.getParameter("itemId")));
+        try {
+            controller.delete(Long.parseLong(req.getParameter("itemId")));
+        } catch (InternalServerError internalServerError) {
+            resp.getWriter().println("Internal Server Error");
+            internalServerError.printStackTrace();
+        }
         resp.getWriter().println("Item is deleted.");
     }
 
