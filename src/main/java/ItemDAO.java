@@ -1,7 +1,4 @@
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.NativeQuery;
 
@@ -31,7 +28,7 @@ public class ItemDAO {
     }
 
 
-    public Item update(Item item) throws InternalServerError {
+    public Item update(Item item) throws InternalServerError, BadRequestException {
         Transaction tr = null;
         try (Session session = createSessionFactory().openSession()){
             tr = session.getTransaction();
@@ -43,6 +40,8 @@ public class ItemDAO {
             System.err.println(e.getMessage());
             if (tr != null)
                 tr.rollback();
+            if (e instanceof StaleObjectStateException)
+                throw new BadRequestException(e.getMessage());
             throw new InternalServerError(e.getMessage());
         }
         System.out.println("Update is done");
@@ -50,7 +49,7 @@ public class ItemDAO {
     }
 
 
-    public void delete(long id) throws InternalServerError {
+    public void delete(long id) throws InternalServerError, BadRequestException {
         Transaction transaction;
         try( Session session = createSessionFactory().openSession()) {
             NativeQuery query = session.createNativeQuery(DELETE_ITEM_BY_ID);
@@ -62,6 +61,8 @@ public class ItemDAO {
             transaction.commit();
         }catch (HibernateException e){
             System.err.println(e.getMessage());
+            if (e instanceof StaleObjectStateException)
+                throw new BadRequestException(e.getMessage());
             throw new InternalServerError(e.getMessage());
         }
     }

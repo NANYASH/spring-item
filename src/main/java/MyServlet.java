@@ -38,9 +38,12 @@ public class MyServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             resp.getWriter().println("Update is done. "+controller.update(mapToItem(req)));
-        } catch (InternalServerError internalServerError) {
+        } catch (InternalServerError e) {
             resp.getWriter().println("Internal Server Error");
-            internalServerError.printStackTrace();
+            e.printStackTrace();
+        } catch (BadRequestException e) {
+            resp.getWriter().println("Bad Request Error");
+            e.printStackTrace();
         }
     }
 
@@ -48,9 +51,12 @@ public class MyServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             controller.delete(Long.parseLong(req.getParameter("itemId")));
-        } catch (InternalServerError internalServerError) {
+        } catch (InternalServerError e) {
             resp.getWriter().println("Internal Server Error");
-            internalServerError.printStackTrace();
+            e.printStackTrace();
+        } catch (BadRequestException e) {
+            resp.getWriter().println("Bad Request Error");
+            e.printStackTrace();
         }
         resp.getWriter().println("Item is deleted.");
     }

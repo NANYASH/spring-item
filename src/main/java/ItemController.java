@@ -6,11 +6,11 @@ public class ItemController {
         return itemService.save(item);
     }
 
-    public Item update(Item item) throws InternalServerError {
+    public Item update(Item item) throws InternalServerError, BadRequestException {
         return itemService.update(item);
     }
 
-    public void delete(Long id) throws InternalServerError {
+    public void delete(Long id) throws InternalServerError, BadRequestException {
         itemService.delete(id);
     }
 
