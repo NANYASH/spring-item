@@ -31,17 +31,17 @@ public class ItemDAO {
     public Item update(Item item) throws InternalServerError, BadRequestException {
         Transaction tr = null;
         try (Session session = createSessionFactory().openSession()){
+            if (findById(Item.class,item.getId())!=null){
             tr = session.getTransaction();
             tr.begin();
             session.update(item);
-            tr.commit();
+            tr.commit();}
+            else throw new BadRequestException("No items");
         }catch (HibernateException e) {
             System.err.println("Update is failed");
             System.err.println(e.getMessage());
             if (tr != null)
                 tr.rollback();
-            if (e instanceof StaleObjectStateException)
-                throw new BadRequestException(e.getMessage());
             throw new InternalServerError(e.getMessage());
         }
         System.out.println("Update is done");
@@ -53,29 +53,35 @@ public class ItemDAO {
         Transaction transaction;
         try( Session session = createSessionFactory().openSession()) {
             NativeQuery query = session.createNativeQuery(DELETE_ITEM_BY_ID);
-            transaction = session.getTransaction();
-            query.addEntity(Item.class);
-            query.setParameter(1,id);
-            transaction.begin();
-            query.executeUpdate();
-            transaction.commit();
+            if (findById(Item.class,id)!=null) {
+                transaction = session.getTransaction();
+                query.addEntity(Item.class);
+                query.setParameter(1, id);
+                transaction.begin();
+                query.executeUpdate();
+                transaction.commit();
+            }else throw new BadRequestException("No items");
         }catch (HibernateException e){
             System.err.println(e.getMessage());
-            if (e instanceof StaleObjectStateException)
-                throw new BadRequestException(e.getMessage());
             throw new InternalServerError(e.getMessage());
         }
     }
 
 
     public Item findById(Class c, long id) throws InternalServerError {
+        Item item;
         try(Session session = createSessionFactory().openSession()) {
-            return (session.get(Item.class, id));
+            item = (session.get(Item.class, id));
+            if (item!=null)return item;
+            throw new BadRequestException("No items with such parameters");
         }catch (HibernateException e) {
             System.err.println(c.getName()+" with such id \"" + id + "\" does not exist.");
             System.err.println(e.getMessage());
             throw new InternalServerError(e.getMessage());
+        } catch (BadRequestException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     public static SessionFactory createSessionFactory(){
