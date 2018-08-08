@@ -20,7 +20,6 @@ public class MyServlet extends HttpServlet {
         } catch (InternalServerError internalServerError) {
             resp.getWriter().println("Internal Server Error");
             internalServerError.printStackTrace();
-
         }
     }
 
@@ -38,11 +37,19 @@ public class MyServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             resp.getWriter().println("Update is done. "+controller.update(mapToItem(req)));
-        } catch (BadRequestException e) {
-            resp.getWriter().println("Bad Request Error");
-            e.printStackTrace();
-        } catch (InternalServerError e) {
-            resp.getWriter().println("Internal Server Error");
+        } catch (Exception e) {
+            if (e instanceof BadRequestException) {
+                resp.getWriter().println("Bad Request Error");
+                e.printStackTrace();
+                return;
+            }
+            if (e instanceof InternalServerError) {
+                resp.getWriter().println("Internal Server Error");
+                e.printStackTrace();
+                return;
+            }
+
+            resp.getWriter().println("Unexpected error");
             e.printStackTrace();
         }
     }
