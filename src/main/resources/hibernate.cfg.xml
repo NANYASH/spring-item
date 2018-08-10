@@ -12,7 +12,7 @@
         <property name="hibernate.connection.password">asol1998</property>
 
         <property name="show_sql">true</property>
-        <mapping class="Item"></mapping>
+        <mapping class="com.Item"></mapping>
 
 
 

@@ -1,7 +1,13 @@
+package com;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
 public class ItemService {
 
-    ItemDAO itemDAO = new ItemDAO();
+    @Autowired
+    private ItemDAO itemDAO;
 
     public Item save(Item item) throws InternalServerError {
         return itemDAO.save(item);
@@ -15,7 +21,9 @@ public class ItemService {
         itemDAO.delete(id);
     }
 
-    public Item findById(long id) throws InternalServerError {
+    public Item findById(long id) throws InternalServerError, BadRequestException {
        return itemDAO.findById(Item.class,id);
     }
+
+
 }

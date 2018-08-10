@@ -1,10 +1,12 @@
+package com;
+
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.NativeQuery;
 
-import javax.transaction.Transactional;
 
 public class ItemDAO {
+
     private static SessionFactory sessionFactory;
     private static final String DELETE_ITEM_BY_ID = "DELETE FROM ITEM WHERE ID = ?";
 
@@ -68,7 +70,7 @@ public class ItemDAO {
     }
 
 
-    public Item findById(Class c, long id) throws InternalServerError {
+    public Item findById(Class c, long id) throws InternalServerError, BadRequestException {
         Item item;
         try(Session session = createSessionFactory().openSession()) {
             item = (session.get(Item.class, id));
@@ -78,15 +80,12 @@ public class ItemDAO {
             System.err.println(c.getName()+" with such id \"" + id + "\" does not exist.");
             System.err.println(e.getMessage());
             throw new InternalServerError(e.getMessage());
-        } catch (BadRequestException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
     public static SessionFactory createSessionFactory(){
-        if (sessionFactory == null) {
-            return new Configuration().configure().buildSessionFactory();}
+        if (sessionFactory == null)
+            sessionFactory = new Configuration().configure().buildSessionFactory();
         return sessionFactory;
     }
 
